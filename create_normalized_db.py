@@ -14,12 +14,16 @@ DOMAINS = ['restaurant', 'hotel', 'attraction', 'train']
 UNNORMALIZED_SLOTS = ['trainID', 'id', 'phone']
 dbs = {}
 dbs_conn = {}
+#for domain in DOMAINS:
+#    db = 'data2.0/db_normalized/{}-dbase.db'.format(domain)
+#    conn = sqlite3.connect(db, timeout=10)
+#    dbs[domain] = conn
+
 for domain in DOMAINS:
     db = 'data2.0/db_normalized/{}-dbase.db'.format(domain)
-    conn = sqlite3.connect(db)
+    conn = sqlite3.connect(db, timeout=10)
     dbs[domain] = conn
 
-for domain in DOMAINS: 
     query = 'select * from {}'.format(domain)
     cursor = dbs[domain].cursor().execute(query)
     entities = cursor.fetchall()
@@ -34,7 +38,7 @@ for domain in DOMAINS:
     if len(all_ids) != len(entities):
         print("Domain {} entity IDs are not unique".format(domain))
     
-    for entity in entities:
+    for entity in tqdm(entities, total=len(entities)):
         update_query = 'UPDATE {} SET '.format(domain)
         values = ()
         for idx, v in enumerate(entity):

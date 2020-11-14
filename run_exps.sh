@@ -44,9 +44,9 @@ else
 fi
 
 # Pretrained model
-pretrained_dst=${out_directory}/multiwoz${version}_dst_sephis${detach_dial_his}_prevst${add_prev_dial_state}_hislen${max_dial_his_len}_sysutt${only_system_utt}_Ns${nb_blocks_slot_dst}_Nd${nb_blocks_domain_dst}_Nds${nb_blocks_domain_slot_dst}_sharedst${share_dst_gen}_Nres0_d${d_model}_atth${att_h}_drop${dropout}/${model}_best.pth.tar
+pretrained_dst=${out_directory}/multiwoz${version}_dst/${model}_best.pth.tar
 # output directory 
-out_dir=${out_directory}/multiwoz${version}_${setting}_sephis${detach_dial_his}_prevst${add_prev_dial_state}_hislen${max_dial_his_len}_sysutt${only_system_utt}_Ns${nb_blocks_slot_dst}_Nd${nb_blocks_domain_dst}_Nds${nb_blocks_domain_slot_dst}_sharedst${share_dst_gen}_Nres0_d${d_model}_atth${att_h}_drop${dropout}
+out_dir=${out_directory}/multiwoz${version}_${setting}
 
 if [ $stage -le 1 ]; then
 python train.py  \
