@@ -83,14 +83,7 @@ class DSTNet(nn.Module):
             out_slots = out['out_slots'].unsqueeze(1)
             out_domains = out_domains.expand(out_domains.shape[0], out_domains.shape[1], out_slots.shape[2], out_domains.shape[3])
             out_slots = out_slots.expand(out_slots.shape[0], out_domains.shape[1], out_slots.shape[2], out_slots.shape[3])
-            
-            if hasattr(self.args, 'ds_fusion') and self.args.ds_fusion == 'sum':
-                out['out_states'] = out_domains + out_slots 
-            else:
-                out['out_states'] = out_domains * out_slots 
-                
-            if hasattr(self.args, 'norm_ds') and self.args.norm_ds:
-                out['out_states'] = self.layer_norm[-1](out['out_states'])
+            out['out_states'] = out_domains * out_slots 
             
             if self.args.domain_slot_dst:
                 out_states = out['out_states']

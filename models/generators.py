@@ -111,12 +111,10 @@ class DSTGenerator(nn.Module):
                 for state_idx in range(domain_state.shape[1]):
                     state_gen = self.generators._modules["dstgen_{}".format(domain)][state_idx]
                     state = domain_state[:,state_idx,:]
-                    #slot_name = self.domain_slots[domain][state_idx]
                     slot_name = self.slots['domain_slots'][domain][state_idx]
                     if 'request' in slot_name or 'booked' in slot_name or 'is_active' in slot_name:
                         out_states[domain].append(state_gen(state))
                     else:
-                        #in_state = tgt_states[domain][state_idx]
                         in_state = batch.out_state[domain][state_idx]
                         out_states[domain].append(state_gen(state, in_state, out['embedded_in_txt'], batch.in_txt, batch.in_txt_mask))
             out['out_state_seqs'] = out_states

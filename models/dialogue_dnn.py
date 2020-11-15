@@ -14,7 +14,6 @@ from models.encoders import *
 from models.dst import *
 from models.nlg import *
 from models.generators import *
-# TODO: remove below line 
 from models.decoders import *
 
 class DialogueNet(nn.Module):
@@ -62,8 +61,6 @@ def make_model(lang, slots, args):
         nb_layer_norm = nb_slot_dst_attn
         if args.domain_flow:
             nb_layer_norm += 1
-            if args.norm_ds:
-                nb_layer_norm += 1
 
         layer_norm = clones(LayerNorm(args.d_model), nb_layer_norm)
         # create domain-level and domain-slot level dst 
@@ -95,11 +92,8 @@ def make_model(lang, slots, args):
     dp_net=None
     if args.setting in ['c2t', 'e2e']:
         tgt_vocab = len(lang['out']['word2idx'])
-        if args.share_inout:
-            out_embed = in_embed 
-        else: 
-            out_embed = [Embeddings(args.d_model, tgt_vocab), c(position)]   
-            out_embed = nn.Sequential(*out_embed)
+        out_embed = [Embeddings(args.d_model, tgt_vocab), c(position)]   
+        out_embed = nn.Sequential(*out_embed)
         pointer_embed = [Embeddings(args.d_model, 2), c(position)]        
         pointer_embed = nn.Sequential(*pointer_embed)
         # Create response decoder 
@@ -109,8 +103,6 @@ def make_model(lang, slots, args):
         res_dec_layer = SubLayer(args.d_model, c(attn), c(ff), args.dropout, nb_attn=nb_res_dec_attn)
         nlg = NLG(res_dec_layer, args.nb_blocks_res_dec)
         nb_layer_norm = nb_res_dec_attn
-        #if args.sys_act:
-        #    nb_layer_norm += 1
         layer_norm = clones(LayerNorm(args.d_model), nb_layer_norm)
         res_generator = ResGenerator(args.d_model, tgt_vocab, out_embed[0])
         nlg_net = NLGNet(

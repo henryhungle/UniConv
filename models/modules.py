@@ -211,14 +211,3 @@ class SubLayer(nn.Module):
         else:
             return self.sublayer[1](out, self.ff)
 
-'''
-class GradZero(Function):
-    def forward(self, x):
-        return x.view_as(x)
-
-    def backward(self, grad_output):
-        return (grad_output * 0)
-
-def grad_reverse(x):
-    return GradReverse()(x)
-'''

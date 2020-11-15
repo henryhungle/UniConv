@@ -20,7 +20,6 @@ import random
 import copy 
 np.set_printoptions(precision=3)
 np.random.seed(2)
-# GLOBAL VARIABLES
 
 def load_dialogues_ls(file_dir):
     dialogues = []
@@ -30,7 +29,6 @@ def load_dialogues_ls(file_dir):
     fin.close()
     return dialogues
 
-#MAX_LENGTH = 50
 excluded_domains = []
 DOMAINS = ['restaurant', 'hotel', 'attraction', 'train', 'taxi', 'hospital', 'police']
 DOMAINS = [i for i in DOMAINS if i not in excluded_domains]
@@ -211,14 +209,11 @@ def get_state(did, tid, utt_state, dsv_dict):
 def get_act(did, tid, acts):
     output_act = {}
     if did[:-5] not in acts:
-        #print("ID: {} No annotation of dialogue act".format(did))
         return None, output_act
     if str(tid) not in acts[did[:-5]]:
-        #print("ID: {} Turn {} No annotation of dialogue act".format(did, tid))
         return None, output_act 
     sys_act = acts[did[:-5]][str(tid)]
     if sys_act == 'No Annotation':
-        #print("ID: {} Turn: {} No annotation of dialogue act".format(did, tid))
         return None, output_act 
     for domain_act,slots in sys_act.items():
         domain,act = domain_act.split('-')
@@ -283,8 +278,6 @@ def delexicalize_data(ignore_booking, save_data, save_prefix, excluded_domains):
             system_txt, delex_system_txt, _, _, _  = delexicalizer.delexicalize(system_turn['text'], dsv_dict, goal, booking_goal, state, booking_state, act, is_last_turn, True, ignore_booking)
             original_pointer_vector = get_db_pointer(dialogue['log'][idx+1]['metadata'], False)
             pointer_vector = get_db_pointer(state, True)
-            #original_pointer_vector = []
-            #pointer_vector = []
             item = {
               'human_txt': human_txt,
               'human_inform_slots': human_inform_slots,
@@ -734,33 +727,16 @@ def main():
     ignore_booking = False
     save_data = True 
     num_samples = -1 #number of dialogues in each set  
-    #num_samples = 1000
-    #save_prefix = ''
     save_prefix = 'updated_'
-    if os.path.exists('data{}/multi-woz/{}delex_data.pkl'.format(DATA_VERSION, save_prefix)):
-        print("Found saved delex data")
-        delex_data = pkl.load(open('data{}/multi-woz/{}delex_data.pkl'.format(DATA_VERSION, save_prefix), 'rb'))
-    else:
-        delex_data = delexicalize_data(ignore_booking, save_data, save_prefix, excluded_domains)
-    #if len(excluded_domains) > 0:
-    #    save_prefix += '_'.join(excluded_domains) + '_'
-    #    delex_data = remove_domains(delex_data, excluded_domains)
-    if os.path.exists('data{}/multi-woz/{}slots.pkl'.format(DATA_VERSION, save_prefix)):
-        print("Found saved slots") 
-        slots = pkl.load(open('data{}/multi-woz/{}slots.pkl'.format(DATA_VERSION, save_prefix), 'rb'))
-    else:
-        slots = get_all_slots(delex_data['delex_dialogues'], delex_data['dsv_dict'], ignore_booking=ignore_booking, save_data=save_data, save_prefix=save_prefix)
+    
+    delex_data = delexicalize_data(ignore_booking, save_data, save_prefix, excluded_domains)
+    slots = get_all_slots(delex_data['delex_dialogues'], delex_data['dsv_dict'], ignore_booking=ignore_booking, save_data=save_data, save_prefix=save_prefix)
     
     all_vocab = True
     booking_ptr = True
     shared_dst = True
     sys_act = True
     share_inout = 0
-    
-    #save_prefix = 'updated_shareinout{}_infreq{}_outfreq{}_'.format(
-    #    share_inout, IN_WORDS_FREQ_MIN, OUT_WORDS_FREQ_MIN)
-    #if not os.path.exists('data{}/multi-woz/{}slots.pkl'.format(DATA_VERSION, save_prefix)):
-    #    pkl.dump(slots, open('data{}/multi-woz/{}slots.pkl'.format(DATA_VERSION, save_prefix), 'wb'))
     
     dials, word_freqs_in, word_freqs_bs, word_freqs_domain_token_bs, word_freqs_out, word_sys_act = divide_data(
         delex_data['delex_dialogues'], slots['domain_slots'], 

@@ -5,7 +5,6 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import math, copy, time
 import pdb
-#from torchtext import data, datasets
 from models.label_smoothing import *
 import utils.data_handler as dh
 from utils.dataset import subsequent_mask
@@ -15,14 +14,13 @@ from preprocess_data import encode as encode_bs
 
 class NoamOpt:
     "Optim wrapper that implements rate."
-    def __init__(self, model_size, factor, warmup, optimizer, fixed_dst):
+    def __init__(self, model_size, factor, warmup, optimizer): 
         self.optimizer = optimizer
         self._step = 0
         self.warmup = warmup
         self.factor = factor
         self.model_size = model_size
         self._rate = 0
-        self.fixed_dst = fixed_dst
         
     def step(self):
         "Update parameters and rate"
@@ -136,11 +134,6 @@ class LossCompute:
         losses['dst_inf'] = 0
         losses['dst_req'] = 0
         if self.args.setting in ['dst', 'e2e']:
-            #if self.args.fixed_dst:
-                #with torch.no_grad():
-                #    out = self.dst_generator(batch, out)
-                #losses, _ = self.get_dst_loss(out, batch, losses)
-            #else:
             out = self.dst_generator(batch, out)
             losses, dst_loss = self.get_dst_loss(out, batch, losses)
             loss += dst_loss
@@ -193,7 +186,6 @@ def generate_res(model, batch, lang, slots, args, out, dst_out):
         query_state = dh.get_bs_for_query(dh.display_state(dst_out, slots['domain_slots'], None))
         new_pointer = get_db_pointer(query_state, True)
         batch.out_ptr = torch.from_numpy(new_pointer).unsqueeze(0).long().cuda()
-    #if True: #model.args.literal_bs:
     if not args.gt_previous_bs: 
         _, curr_state_txt = make_bs_txt(dst_out, slots['domain_slots'])
         batch.in_curr_state = torch.tensor(encode_bs(lang['in+domain+bs']['word2idx'], curr_state_txt)).unsqueeze(0).cuda()
@@ -276,7 +268,6 @@ def beam_search_decode(model, batch, encoded, lang, args):
             encoded = model.nlg_net.decode_response(batch, encoded)
             output = model.nlg_net.res_generator(batch, encoded)
             logp = output['out_res_seqs'][:,-1]
-            #logp = model.res_generator(output[:, -1])
             lp_vec = logp.cpu().data.numpy() + lp
             lp_vec = np.squeeze(lp_vec)
             if l >= min_len:

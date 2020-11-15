@@ -66,8 +66,6 @@ slots_dir = 'data{}/multi-woz/{}slots.pkl'.format(args.data_version, prefix)
 print('Extracting slots from ' + slots_dir)
 slots = pkl.load(open(slots_dir, 'rb'))
 slots = dh.merge_dst(slots) 
-if args.dst_classify:
-    slots = dh.add_dst_vocab(slots)
 
 pretrained_word_emb = None 
 train_data = encoded_data['train']
@@ -75,8 +73,8 @@ valid_data = encoded_data['val']
 train_data = dh.limit_his_len(train_data, lang['in']['word2idx'], args.max_dial_his_len, args.only_system_utt)
 valid_data = dh.limit_his_len(valid_data, lang['in']['word2idx'], args.max_dial_his_len, args.only_system_utt)
 if args.detach_dial_his:
-    train_data = dh.detach_dial_his(train_data, lang['in']['word2idx'], args.incl_sys_utt)
-    valid_data = dh.detach_dial_his(valid_data, lang['in']['word2idx'], args.incl_sys_utt)
+    train_data = dh.detach_dial_his(train_data, lang['in']['word2idx']) 
+    valid_data = dh.detach_dial_his(valid_data, lang['in']['word2idx']) 
     
 # report data summary
 print('#in_vocab = {}'.format(len(lang['in+domain+bs']['word2idx'])))
@@ -112,7 +110,7 @@ if args.setting in ['c2t', 'e2e']:
     nlg_criterion = LabelSmoothing(size=len(tgt_vocab), padding_idx=tgt_vocab['<pad>'], smoothing=0.1).cuda()
     if args.sys_act:
         dp_criterion = nn.BCEWithLogitsLoss()
-model_opt = NoamOpt(args.d_model, 1, args.warmup_steps, torch.optim.Adam(model.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9), args.fixed_dst)
+model_opt = NoamOpt(args.d_model, 1, args.warmup_steps, torch.optim.Adam(model.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9))
 train_loss = LossCompute(model, dst_criterion, nlg_criterion, dp_criterion, opt=model_opt, args=args, slots=slots)
 valid_loss = LossCompute(model, dst_criterion, nlg_criterion, dp_criterion, opt=None, args=args, slots=slots)
 

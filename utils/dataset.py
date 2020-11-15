@@ -198,8 +198,6 @@ def collate_fn(data, vocab, slots, args):
                         inf_batch.append(slot_values)
                         lens = [len(i) for i in slot_values]
                         if max(lens)>max_inf_len: max_inf_len=max(lens)
-                        #if domain not in num_tokens: num_tokens[domain] = {}
-                        #num_tokens[domain][slot_name] = sum(lens)
                         num_tokens += sum(lens)
             req_batch = prepare_data(np.asarray(req_batch).transpose())
             for idx, inf in enumerate(inf_batch):

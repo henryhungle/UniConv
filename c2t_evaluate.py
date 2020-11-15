@@ -82,11 +82,9 @@ for dial_id, dial_result in result.items():
     delex_dial = data['delex_dialogues'][dial_name]['dialogue']
     if dial_name not in predicted_dials:
         predicted_dials[dial_name] = [None] * len(delex_dial)
-    #dials_ls.add(dial_name)
     res = [dial_result['response']]
     pred_res = [dial_result['predicted_response']['0']['txt']]
     active_domains = list(data['delex_dialogues'][dial_name]['goal'].keys())
-    #active_domains = dial_result['active_domains']
     original_res.append(res)
     predicted_res.append(pred_res)
     if turn not in original_turn_res: original_turn_res[turn] = []
@@ -94,7 +92,6 @@ for dial_id, dial_result in result.items():
     original_turn_res[turn].append(res)
     predicted_turn_res[turn].append(pred_res)
     predicted_dials[dial_name][int(turn)-1] = pred_res[0]
-    #for domain in active_domains:
     if len(active_domains) == 1:
         domain = active_domains[0]
         if domain not in domain_original_res: domain_original_res[domain] = []
@@ -188,10 +185,6 @@ for dial_name, dial in tqdm(predicted_dials.items()):
                     if len(gt_venues)>0:
                         oracle_venue_offered[domain] = random.sample(gt_venues, 1)
             provided_requestables[domain] += get_requestables(domain, sent_t)
-        #gt_requestables, gt_limited_requestables = get_bs_for_request(original_bs, gt_requestables, gt_limited_requestables)
-        #print("sent: {}".format(sent_t))
-        #print("predicted bs: {}".format(predicted_bs))
-    #print("provided req: {}".format(provided_requestables))
 
     for domain in goal.keys():
         if 'name' in goal[domain]:

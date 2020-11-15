@@ -1,28 +1,19 @@
 # Controlling params 
 setting=$1 #dst, c2t, or e2e
 stage=$2 #to select training, test, and eval stage
-version="2.1"
-small_data=0
-tep='best'
-#te2e=0
+small_data=$3 # for debugging purpose, only training for 3 epochs, use small sized data only  
 
-# Data  
+# Data params
+version="2.1"
 prefix="updated_"
 max_dial_his_len=1
-only_system_utt=1
 detach_dial_his=1  
-incl_sys_utt=0
 add_prev_dial_state=1 
 num_workers=4
 
-# Model architecture 
+# Model params
 model=tf
-domain_flow=1
-domain_slot_dst=0
-share_dst_gen=1
-sys_act=1
-
-# Model params 
+sys_act=1 
 nb_blocks_res_dec=3
 nb_blocks_slot_dst=3
 nb_blocks_domain_dst=3
@@ -52,7 +43,7 @@ if [ $stage -le 1 ]; then
 python train.py  \
           --out-dir $out_dir \
           --data-version $version \
-          --small-data 0 \
+          --small-data $small_data \
           --num-workers $num_workers \
           --prefix $prefix \
           --model $model \
@@ -63,24 +54,20 @@ python train.py  \
           --detach-dial-his $detach_dial_his \
           --add-prev-dial-state $add_prev_dial_state \
           --max-dial-his-len $max_dial_his_len \
-          --incl-sys-utt $incl_sys_utt \
-          --only-system-utt $only_system_utt \
           --setting $setting \
-          --domain-flow $domain_flow \
           --nb-blocks-slot-dst $nb_blocks_slot_dst \
           --nb-blocks-domain-dst $nb_blocks_domain_dst \
-          --domain-slot-dst $domain_slot_dst \
           --nb-blocks-domain-slot-dst $nb_blocks_domain_slot_dst \
           --nb-blocks-res-dec $nb_blocks_res_dec \
           --d-model $d_model \
           --d-ff $d_ff \
           --att-h $att_h \
-          --share-dst-gen $share_dst_gen \
           --pretrained-dst $pretrained_dst \
           --sys-act $sys_act
 fi
 
-#testing params 
+#testing params
+tep='best'
 dst_max_len=10
 res_max_len=20
 res_min_len=1
@@ -108,7 +95,7 @@ if [ $stage -le 2 ]; then
           --output $output \
           --gt-db-pointer $gt_db_pointer \
           --gt-previous-bs $gt_previous_bs \
-          --small-data 0 \
+          --small-data $small_data \
           --tep $tep \
           --verbose 0
 fi
@@ -127,7 +114,7 @@ if [ $stage -le 3 ]; then
           --output $output \
           --gt-db-pointer $gt_db_pointer \
           --gt-previous-bs $gt_previous_bs \
-          --small-data 0 \
+          --small-data $small_data \
           --tep $tep
     fi 
 
@@ -144,7 +131,7 @@ if [ $stage -le 3 ]; then
           --output $output \
           --gt-db-pointer $gt_db_pointer \
           --gt-previous-bs $gt_previous_bs \
-          --small-data 0 \
+          --small-data $small_data \
           --tep $tep
     fi
 fi

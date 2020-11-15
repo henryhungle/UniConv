@@ -12,20 +12,12 @@ from tqdm import tqdm
 DOMAINS = ['restaurant', 'hotel', 'attraction', 'train']
 # 3 domains do not have a DB: 'taxi', 'hospital', 'police'
 UNNORMALIZED_SLOTS = ['trainID', 'id', 'phone']
-dbs = {}
-dbs_conn = {}
-#for domain in DOMAINS:
-#    db = 'data2.0/db_normalized/{}-dbase.db'.format(domain)
-#    conn = sqlite3.connect(db, timeout=10)
-#    dbs[domain] = conn
 
 for domain in DOMAINS:
     db = 'data2.0/db_normalized/{}-dbase.db'.format(domain)
-    conn = sqlite3.connect(db, timeout=10)
-    dbs[domain] = conn
-
+    conn = sqlite3.connect(db)
     query = 'select * from {}'.format(domain)
-    cursor = dbs[domain].cursor().execute(query)
+    cursor = conn.cursor().execute(query)
     entities = cursor.fetchall()
     print("Domain {} Num Entities {}".format(domain, len(entities)))
     keys = list(map(lambda x: x[0], cursor.description))
@@ -58,6 +50,6 @@ for domain in DOMAINS:
             values = (*values, arrive_by)
         else:
             update_query += 'WHERE id = ?'
-        dbs[domain].cursor().execute(update_query, values)
-        dbs[domain].commit()
+        conn.cursor().execute(update_query, values)
+        conn.commit()
 

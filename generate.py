@@ -12,11 +12,6 @@ import json
 import numpy as np
 import pdb
 
-#import six
-#import seaborn
-#from scipy.ndimage.filters import gaussian_filter
-#import matplotlib.pyplot as plt
-
 import torch
 import torch.nn as nn
 from utils.data_handler import *  
@@ -51,7 +46,6 @@ def make_plots(layers, att_heads, net, sublayer_idx, x, y, prefix, combine_score
 
 # Evaluation routine
 def generate_response(model, data, loader, vocab, slots):
-    #vocablist = sorted(vocab.keys(), key=lambda s:vocab[s])
     result_dialogues = {}
     model.eval()
     batch_idx = 0
@@ -61,10 +55,6 @@ def generate_response(model, data, loader, vocab, slots):
         it = tqdm(enumerate(loader),total=len(loader), desc="", ncols=0)
     with torch.no_grad():
         for batch_idx, batch in it:
-        #for dialogue_id, ref_dialogue in data.items():
-            #if '2499.json' not in dialogue_id: 
-            #    batch_idx += 1
-            #    continue 
             batch.to_cuda()
             dialogue_id = batch.dial_ids[0]
             ref_dialogue = data[dialogue_id]
@@ -110,31 +100,8 @@ def generate_response(model, data, loader, vocab, slots):
                     for idx, response in res_output.items():
                         print('HYP[{}]: {} ({})'.format(idx+1, response['txt'], response['score']))
                 
-            '''
-            if '2499.json_5' in dialogue_id: 
-                in_utt_idx = [int(i) for i in batch.in_utt[0].data.cpu()]
-                in_utt_txt = [lang['in+domain+bs']['idx2word'][i] for i in in_utt_idx]
-                in_his_idx = [int(i) for i in batch.in_his[0].data.cpu()]
-                in_his_txt = [lang['in+domain+bs']['idx2word'][i] for i in in_his_idx]
-                in_state_idx = [int(i) for i in batch.in_state[0].data.cpu()]
-                in_state_txt = [lang['in+domain+bs']['idx2word'][i] for i in in_state_idx]
-                slots_ls = slots['slots']
-                slots_ls = [i.replace('inform', 'inf').replace('request', 'req') for i in slots_ls]
-                domains_ls = list(slots['domain_slots'].keys())
-                ds_ls = []
-                for d in domains_ls:
-                    for s in slots_ls:
-                        ds_ls.append('_'.join([d,s]))
-                att_heads = list(range(8))
-                make_plots(range(2,4), att_heads, model.general_dst, 3, in_utt_txt, slots_ls, 'slot_utt_', True)
-                make_plots(range(2,4), att_heads, model.domain_flow_dst, 2, in_utt_txt, domains_ls, 'domain_utt_', True)
-            '''
-            #if model.c2t:
-            #    predicted_state = original_state
-            #else:
             if args.verbose:
                 print('-----------------------')
-            #if batch_idx == 50: break
     return result_dialogues
 
 # Load params and model
@@ -162,7 +129,7 @@ slots = merge_dst(slots)
 test_data = encoded_data['test']
 test_data = limit_his_len(test_data, lang['in']['word2idx'], train_args.max_dial_his_len, train_args.only_system_utt)
 if train_args.detach_dial_his:
-    test_data = detach_dial_his(test_data, lang['in']['word2idx'], train_args.incl_sys_utt)
+    test_data = detach_dial_his(test_data, lang['in']['word2idx'])
 
 test_dataloader, test_samples = dh.create_dataset(lang, slots, test_data, False, train_args, 1, 0)
 print('#test samples = {}'.format(test_samples))
