@@ -70,7 +70,18 @@ While training, the model with the best validation is saved. The model output, p
 
 Other parameters, including data-related options, model parameters,  training and generating settings, are defined under the `configs` folder. 
 
-Examples of pretrained UniConv models (DST, context-to-text, and end-to-end models) using the sampled script in `run_exps.sh` can be downloaded here (TBD). Unzip the download file and update the `out_dir` parameter in the generating command (stage 2) in the `run_exps.sh` to the corresponding unzip directory e.g. `save/multiwoz2.1_c2t`. Using the pretrained models, the test script provides the following results in the end-to-end setting: 
-(TBD) 
+## Models
+
+Examples of pretrained UniConv models using the sampled script in `run_exps.sh` can be downloaded [here](https://drive.google.com/drive/folders/1chueZNjpQWUxFpE48vJhHqm0M3GYifTr?usp=sharing). 
+
+Unzip the download file and update the `out_dir` parameter in the generating command (stage 2) in the `run_exps.sh` to the corresponding unzip directory e.g. `save/multiwoz2.1_c2t`. Using the pretrained models, the test script provides the following results:
+
+| Model           | Task            | Multiwoz version | Joint Acc | Slot Acc | Inform | Success | BLEU  |
+|-----------------|-----------------|------------------|-----------|----------|--------|---------|-------|
+| multiwoz2.0_dst | state tracking  | 2.0              | 46.35%    | 97.14%   | -      | -       | -     |
+| multiwoz2.0_c2t | context-to-text | 2.0              | -         | -        | 84.7%  | 76.3%   | 19.83 |
+| multiwoz2.1_dst | state tracking  | 2.1              | 48.85%    | 97.24%   | -      | -       | -     |
+| multiwoz2.0_c2t | context-to-text | 2.1              | -         | -        | 84.5%  | 74.2%   | 19.97 |
+
 
 

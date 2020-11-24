@@ -2,9 +2,9 @@
 setting=$1 #dst, c2t, or e2e
 stage=$2 #to select training, test, and eval stage
 small_data=$3 # for debugging purpose, only training for 3 epochs, use small sized data only  
+version=$4
 
 # Data params
-version="2.1"
 prefix="updated_"
 max_dial_his_len=1
 detach_dial_his=1  
