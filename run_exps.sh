@@ -2,7 +2,7 @@
 setting=$1 #dst, c2t, or e2e
 stage=$2 #to select training, test, and eval stage
 small_data=$3 # for debugging purpose, only training for 3 epochs, use small sized data only  
-version=$4
+version=$4 # 2.0 or 2.1 
 
 # Data params
 prefix="updated_"
